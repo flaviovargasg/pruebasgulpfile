@@ -68,8 +68,10 @@ gulp.task('copyhtml', function () {
 
 //copiar vendor
 gulp.task('copyvendor', function () {
-    gulp.src(srcPaths.vendor+'**/')
-        .pipe(gulp.dest(distPaths.data));
+    return gulp.src(['src/vendor/**.*html', 'src/vendor/bootstrap/**/*', 'src/vendor/storejs/**/*'], {
+        base: srcPaths.vendor
+    })
+        .pipe(gulp.dest(distPaths.vendor));
 });
 
 //transpilación typescript a js
@@ -91,5 +93,5 @@ gulp.task('typescript', function () {
 });
 
 //Default, falta la tarea de copiar vendor
-gulp.task('default', ['clean', 'copy', 'imagemin', 'sass2css', 'copyhtml', 'typescript'], function() {
+gulp.task('default', ['clean', 'imagemin', 'sass2css', 'copyhtml', 'typescript', 'copyvendor'], function() {
 });
