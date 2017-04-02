@@ -67,22 +67,23 @@ gulp.task('copy', function () {
     }).pipe(gulp.dest(distPaths.data));
 });
 
-//a ver este typescript qué (le cambié el nombre
+//a ver este typescript qué
 gulp.task('typescript', function () {
-    return gulp.src (srcPaths.scripts+'**/*.ts')
-       .pipe(typescript())
-       .pipe(tsProject())
-       .pipe(sourcemaps.init())
+    return tsProject.src(),
+        gulp.src(srcPaths.scripts+'**/*.ts')
+            .pipe(tsProject())
+            .pipe(sourcemaps.init())
             .pipe(concat('./src/app.js'))
             .pipe(uglify().on('error', function(e){
-            console.log(e);
-        }))
-       .pipe(sourcemaps.write())
-       .pipe(gulp.dest(distPaths.scripts))
-       .pipe(browserSync.reload({stream: true}));
+                console.log(e);
+            }))
+            .pipe(sourcemaps.write())
+            .pipe(gulp.dest(distPaths.scripts))
+            .pipe(browserSync.reload({stream: true}));
 });
+
 
 
 //default le quité la tarea "server"
-gulp.task('default', ['clean', 'copy', 'imagemin', 'sass2css', 'typescript'], function() {
-});
+gulp.task('default', ['clean', 'copy', 'imagemin', 'sass2css', 'typescript', 'tsproject'], function() {
+};
