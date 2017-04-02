@@ -67,23 +67,30 @@ gulp.task('copy', function () {
     }).pipe(gulp.dest(distPaths.data));
 });
 
-//a ver este typescript qué
+//sin los errores TS2304
 gulp.task('typescript', function () {
-    return tsProject.src(),
-        gulp.src(srcPaths.scripts+'**/*.ts')
-            .pipe(tsProject())
-            .pipe(sourcemaps.init())
-            .pipe(concat('./src/app.js'))
-            .pipe(uglify().on('error', function(e){
-                console.log(e);
-            }))
-            .pipe(sourcemaps.write())
-            .pipe(gulp.dest(distPaths.scripts))
-            .pipe(browserSync.reload({stream: true}));
+    var tsResult = gulp.src(srcPaths.scripts+'**/*.ts');
+    return tsProject.src()
+        .pipe(tsProject())
+        .pipe(sourcemaps.init())
+        .pipe(concat('.app.js'))
+        .pipe(uglify().on('error', function(e){
+            console.log(e);
+        }))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest(distPaths.scripts))
+        .pipe(browserSync.reload({stream: true}));
 });
 
+/*
+ gulp.task('scripts', function() {
+ *var tsResult = gulp.src("lib/++/+.ts") // or tsProject.src()
+ .pipe(tsProject());
 
+ return tsResult.js.pipe(gulp.dest('release'));
+ });
+ */
 
 //default le quité la tarea "server"
 gulp.task('default', ['clean', 'copy', 'imagemin', 'sass2css', 'typescript', 'tsproject'], function() {
-};
+});
