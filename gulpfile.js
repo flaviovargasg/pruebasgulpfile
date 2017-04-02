@@ -19,7 +19,7 @@ var srcPaths = {
     styles:   'src/sass/',
     files:    'src/',
     data:     'data/',
-    vendor:   'vendor'
+    vendor:   'src/vendor'
 };
 
 // Definición de directorios destino
@@ -50,7 +50,7 @@ gulp.task('imagemin', function() {
     /*.pipe(browserSync.stream());*/
 });
 
-//transpilación de sass
+//Transpilación de sass
 gulp.task('sass2css', function() {
     return gulp.src([srcPaths.styles+'**/*.scss'])
         .pipe(sourcemaps.init())
@@ -60,30 +60,36 @@ gulp.task('sass2css', function() {
     /*.pipe(browserSync.stream());*/
 });
 
-//nuevo plugin de copy, quité las demás quité , srcPaths.scripts+'*.js', srcPaths.vendor+'**/*' - no funciona
-gulp.task('copy', function () {
-    return gulp.src(['*.html', srcPaths.scripts+'*.js', srcPaths.vendor+'**/*'], {
-        base: srcPaths.files
-    }).pipe(gulp.dest(distPaths.data));
+//copiar html.index
+gulp.task('copyhtml', function () {
+    gulp.src('src/index.html')
+        .pipe(gulp.dest(distPaths.data));
 });
 
-//a ver este typescript qué
+//copiar vendor
+gulp.task('copyvendor', function () {
+    gulp.src(srcPaths.vendor+'**/')
+        .pipe(gulp.dest(distPaths.data));
+});
+
+//transpilación typescript a js
 gulp.task('typescript', function () {
-    return tsProject.src(),
-        gulp.src(srcPaths.scripts+'**/*.ts')
-            .pipe(tsProject())
-            .pipe(sourcemaps.init())
-            .pipe(concat('./src/app.js'))
-            .pipe(uglify().on('error', function(e){
-                console.log(e);
-            }))
-            .pipe(sourcemaps.write())
-            .pipe(gulp.dest(distPaths.scripts))
-            .pipe(browserSync.reload({stream: true}));
+    var tsResult = gulp.src(srcPaths.scripts+'**/*.ts');
+    return tsProject.src()
+        .pipe(tsProject({
+            noImplicitAny: true,
+            outFile: 'false'
+        }))
+        .pipe(sourcemaps.init())
+        .pipe(concat('.app.js'))
+        .pipe(uglify().on('error', function(e){
+            console.log(e);
+        }))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest(distPaths.scripts))
+        .pipe(browserSync.reload({stream: true}));
 });
 
-
-
-//default le quité la tarea "server"
-gulp.task('default', ['clean', 'copy', 'imagemin', 'sass2css', 'typescript', 'tsproject'], function() {
-};
+//Default, falta la tarea de copiar vendor
+gulp.task('default', ['clean', 'copy', 'imagemin', 'sass2css', 'copyhtml', 'typescript'], function() {
+});
