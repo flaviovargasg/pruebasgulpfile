@@ -24,12 +24,12 @@ var srcPaths = {
 
 // Definición de directorios destino
 var distPaths = {
-    images:   'dist/data/img/',
-    scripts:  'dist/data/js/',
-    styles:   'dist/data/css/',
-    files:    'dist/data/',
+    images:   'dist/img/',
+    scripts:  'dist/js/',
+    styles:   'dist/css/',
+    files:    'dist/',
     data:     'dist/data/',
-    vendor:   'dist/data/vendor/'
+    vendor:   'dist/vendor/'
 };
 
 // Limpieza de la carpeta dist
@@ -37,6 +37,25 @@ gulp.task('clean', function(cb) {
     clean([ distPaths.files+'*.html', distPaths.images+'**/*', distPaths.scripts+'*.js', distPaths.styles+'*.css'], cb);
 });
 
+//Copiar html.index
+gulp.task('copyhtml', function () {
+    gulp.src('src/index.html')
+        .pipe(gulp.dest(distPaths.files));
+});
+
+//Copiar vendor
+gulp.task('copyvendor', function () {
+    return gulp.src(['src/vendor/**.*html', 'src/vendor/bootstrap/**/*', 'src/vendor/storejs/**/*'], {
+        base: srcPaths.vendor
+    })
+        .pipe(gulp.dest(distPaths.vendor));
+});
+
+//Copiar data
+gulp.task('copydata', function () {
+    gulp.src('src/data/**.*json')
+        .pipe(gulp.dest(distPaths.data));
+});
 
 //Procesamiento de imágenes para comprimir / optimizar.
 gulp.task('imagemin', function() {
@@ -60,21 +79,7 @@ gulp.task('sass2css', function() {
     /*.pipe(browserSync.stream());*/
 });
 
-//copiar html.index
-gulp.task('copyhtml', function () {
-    gulp.src('src/index.html')
-        .pipe(gulp.dest(distPaths.data));
-});
-
-//copiar vendor
-gulp.task('copyvendor', function () {
-    return gulp.src(['src/vendor/**.*html', 'src/vendor/bootstrap/**/*', 'src/vendor/storejs/**/*'], {
-        base: srcPaths.vendor
-    })
-        .pipe(gulp.dest(distPaths.vendor));
-});
-
-//transpilación typescript a js
+//Transpilación typescript a js
 gulp.task('typescript', function () {
     var tsResult = gulp.src(srcPaths.scripts+'**/*.ts');
     return tsProject.src()
@@ -83,7 +88,7 @@ gulp.task('typescript', function () {
             outFile: 'false'
         }))
         .pipe(sourcemaps.init())
-        .pipe(concat('.app.js'))
+        .pipe(concat('.all.min.js'))
         .pipe(uglify().on('error', function(e){
             console.log(e);
         }))
@@ -92,6 +97,6 @@ gulp.task('typescript', function () {
         .pipe(browserSync.reload({stream: true}));
 });
 
-//Default, falta la tarea de copiar vendor
-gulp.task('default', ['clean', 'imagemin', 'sass2css', 'copyhtml', 'typescript', 'copyvendor'], function() {
+//Default
+gulp.task('default', ['clean', 'copyvendor', 'copydata', 'copyhtml', 'imagemin', 'sass2css', 'typescript'], function() {
 });
